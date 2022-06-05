@@ -1,0 +1,127 @@
+`timescale 0.1ns / 0.01ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 04/24/2022 02:08:27 PM
+// Design Name: 
+// Module Name: tb
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module tb();
+reg clk;
+//reg [2:0] count;
+reg [7:0] mem1[0:307199];
+wire [7:0] out;
+//genvar i,j;
+//integer i =1, j=1, count=0;
+integer fo;
+reg [9:0] i, j;
+
+
+    sobel first(
+        .D1(mem1[640*(j-1)+i-1]),
+        .D2(mem1[640*(j-1)+i]),
+        .D3(mem1[640*(j-1)+i+1]),
+        .D4(mem1[640*(j)+i-1]),
+        .D5(mem1[640*(j)+i]),
+        .D6(mem1[640*(j)+i+1]),
+        .D7(mem1[640*(j+1)+i-1]),
+        .D8(mem1[640*(j+1)+i]),
+        .D9(mem1[640*(j+1)+i+1]),
+        .out(out),
+        .clk(clk)
+    );
+
+initial begin
+    clk = 1'b0;
+    i = 10'b00_0000_0001;
+    j = 10'b00_0000_0001;
+    $readmemh("D:/FingerVein/3.txt",mem1);
+    fo = $fopen("D:/FingerVein/F1.bmp","a");
+end
+    
+    always @ (posedge clk) begin
+        if (j==480)
+            $finish;
+            end
+     
+     always @ (posedge clk) begin
+        if (i<639) begin
+            if (j==479) begin
+                $fwrite(fo,"%c%c%c",125,125,125);
+                end/*
+            else if (j==1) begin
+                
+                $fwrite(fo,"%c%c%c",255,255,255);
+                end*/
+            else begin
+                $fwrite(fo,"%c%c%c",out,out,out);
+                //$fwrite(fo,"%0d%0d%0d",out,out,out);
+                end
+            i <= i+10'b00_0000_0001;
+            end
+        else if (i == 639) begin
+            i <= 10'b00_0000_0001;
+            j <= j+10'b00_0000_0001;
+            $fwrite(fo,"%c%c%c%c%c%c",255,255,255,255,255,255);
+            //$fwrite(fo,"%0d%0d%0d",count,count,count);
+            //$fwrite(fo,"%0d%0d%0d",count,count,count);
+            end
+        end
+    
+
+    
+    
+    
+    
+    
+    /*
+    begin
+    if (j==480-2)
+        begin
+            $finish;
+        end
+    if (i==1 && j == 1)
+        #50;
+    $display("time = %t,i = %d,j = %d, out = %d",$time,i,j,out);
+    $fwrite(fo,"%0d%0d%0d",out,out,out);
+        i<=i+1;
+        if (i==639)
+        begin
+            i<=1;
+            j<=j+1;
+            $fwrite(fo,"%0d%0d%0d%0d%0d%0d",count,count,count,count,count,count);
+        end
+
+    end
+
+/*
+for (j=0;j<478;j=j+1) begin
+//    $fwrite (fo,"%0d%0d%0d",0,0,0);
+            $fwrite(fo,"%0d%0d%0d",count,count,count);
+
+for (i=0;i<638;i=i+1) begin
+
+    
+
+end
+end*/
+
+
+
+always #0.01 clk = ~clk;
+
+endmodule
